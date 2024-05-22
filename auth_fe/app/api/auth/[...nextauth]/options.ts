@@ -39,39 +39,40 @@ export const options = {
           body: JSON.stringify(credentials),
           headers: { "Content-Type": "application/json" },
         });
-        const user = await res.json();
-        console.log(user);
-        if (res.status === 200) {
-          const res = await fetch(`${url}/sign-in-account/`, {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
-          });
-          const user = await res.json();
+        return await res.json().then(async (res) => {
+          console.log("show me in: ", res?.data);
+          if (res?.data) {
+            const res = await fetch(`${url}/sign-in-account/`, {
+              method: "POST",
+              body: JSON.stringify(credentials),
+              headers: { "Content-Type": "application/json" },
+            });
+            const user = await res.json();
 
-          if (res.ok && user) {
-            return { name: user?.data?.name, email: user?.data?.email };
+            if (res.ok && user) {
+              return { name: user?.data?.name, email: user?.data?.email };
+            } else {
+              return null;
+            }
           } else {
-            return null;
-          }
-        } else {
-          const res = await fetch(`${url}/create-account/`, {
-            method: "POST",
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" },
-          });
-          const user = await res.json();
+            const res = await fetch(`${url}/create-account/`, {
+              method: "POST",
+              body: JSON.stringify(credentials),
+              headers: { "Content-Type": "application/json" },
+            });
+            const user = await res.json();
 
-          if (res.ok && user) {
-            return {
-              name: user?.data?.name,
-              email: user?.data?.email,
-              password: user?.data?.password,
-            };
-          } else {
-            return null;
+            if (res.ok && user) {
+              return {
+                name: user?.data?.name,
+                email: user?.data?.email,
+                password: user?.data?.password,
+              };
+            } else {
+              return null;
+            }
           }
-        }
+        });
       },
     }),
 
